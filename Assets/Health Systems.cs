@@ -35,8 +35,11 @@ public class HealthSystems : MonoBehaviour
         }
 
     }
-    
 
+    void TakeDamage(int damage)
+    {
+        HP -= 150;
+    }
     
 
     
