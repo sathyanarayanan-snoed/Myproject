@@ -1,3 +1,5 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class DASH : MonoBehaviour
@@ -15,21 +17,28 @@ public class DASH : MonoBehaviour
     private bool isDashing;
     private int Jump;
     private int MaxJump = 2 ;
-   
+    private Animator animator;
     
     
-    
+
+
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         RB = GetComponent<Rigidbody2D>();
         Jump = MaxJump;
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
         move = Input.GetAxisRaw("Horizontal");
+        animator.SetFloat("Speed", Math.Abs(move));
+        
+        
         if (!isDashing)
         {
             RB.linearVelocity = new Vector2(move * Speed, RB.linearVelocity.y);
