@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ public class DASH : MonoBehaviour
     private float JumpSpeed = 10f;
     private Rigidbody2D RB;
     private bool isGround = false;
-    private float move;
+    public float move = 0f;
     private float Dashforce = 20f;
     private float Dashtime = 0.2f;
     private float Dashcooldown = 0.5f;
@@ -19,7 +20,13 @@ public class DASH : MonoBehaviour
     private int MaxJump = 2 ;
     private Animator animator;
     
+    private SpriteRenderer spriteRenderer;
+    public Transform attackPoint;
+    public bool facingRight = false;
     
+    
+
+
 
 
 
@@ -30,13 +37,35 @@ public class DASH : MonoBehaviour
         RB = GetComponent<Rigidbody2D>();
         Jump = MaxJump;
         animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        
     }
 
     // Update is called once per frame
-    void Update()
+   public void Update()
     {
         move = Input.GetAxisRaw("Horizontal");
         animator.SetFloat("Speed", Math.Abs(move));
+         if (move > 0)
+    {
+        facingRight = true;
+    }
+    else if (move < 0)
+    {
+        facingRight = false;
+    }
+
+        if (spriteRenderer && Mathf.Abs(move) > 0.01f)
+        {
+            spriteRenderer.flipX = move > 0f;
+            if (attackPoint != null)
+            {
+                Vector3 pos = attackPoint.localPosition;
+                pos.x = Mathf.Abs(pos.x) * (move > 0f ? 1 : -1);
+                attackPoint.localPosition = pos;
+            }
+        }
+
         
         
         if (!isDashing)
@@ -50,6 +79,9 @@ public class DASH : MonoBehaviour
             {
                 RB.linearVelocity = new Vector2(RB.linearVelocity.x, JumpSpeed);
                 Jump--;
+                animator.SetTrigger("Jump");
+
+                
 
         }
         
@@ -80,6 +112,7 @@ public class DASH : MonoBehaviour
         {
             isGround = true;
             Jump = MaxJump;
+            
 
 
 
@@ -94,9 +127,10 @@ public class DASH : MonoBehaviour
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Floor") )
+        if (collision.gameObject.CompareTag("Floor"))
         {
             isGround = false;
+            
         }
     }
 
